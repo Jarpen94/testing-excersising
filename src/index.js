@@ -1,31 +1,35 @@
-const orders = [
-    {
-        name: 'Lager',
-        price: 10
-    },
-    {
-        name: 'APA',
-        price: 15
-    }
-]
+export const orderTotal = (arrayOfOrders) => {
+    const { preTotal, shipping } = arrayOfOrders.reduce(
+        (reduced, item) => {
+            if (item.shipping === true)
+                reduced.shipping = item
 
-export const orderTotal = (arrayOfOrder) => {
-
-    return arrayOfOrder.reduce(
-        (reduced, item, index, array) => {
-            reduced = reduced + item.price
-            return reduced
+            return {
+                ...reduced,
+                preTotal: (
+                    item.quantity !== undefined ?
+                        reduced.preTotal + (item.price * item.quantity)
+                        :
+                        reduced.preTotal + item.price
+                )
+            }
         },
-        0
+        { preTotal: 0, shipping: null }
+    )
+
+    return (
+        (
+            shipping &&
+            preTotal >= (shipping.freeShipping + shipping.price)
+        ) ?
+            preTotal - shipping.price
+            :
+            preTotal
     )
 }
 
-console.log(orderTotal(orders)) //should log 25
-
-if (orderTotal(orders) !== 25) {
-    throw new Error('Simple sum failed')
-}
-
-if (orderTotal([]) !== 0) {
-    throw new Error('Simple sum failed')
-}
+export const fetchOrdersAndCalculateTotal = () => (
+    fetch('https://ad-snadbox.firebaseio.com/jfddl6/orders.json')
+        .then(r => r.json())
+        .then(data => orderTotal(data))
+)
