@@ -1,12 +1,31 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+const orders = [
+    {
+        name: 'Lager',
+        price: 10
+    },
+    {
+        name: 'APA',
+        price: 15
+    }
+]
 
-ReactDOM.render(<App />, document.getElementById('root'));
+export const orderTotal = (arrayOfOrder) => {
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: http://bit.ly/CRA-PWA
-serviceWorker.unregister();
+    return arrayOfOrder.reduce(
+        (reduced, item, index, array) => {
+            reduced = reduced + item.price
+            return reduced
+        },
+        0
+    )
+}
+
+console.log(orderTotal(orders)) //should log 25
+
+if (orderTotal(orders) !== 25) {
+    throw new Error('Simple sum failed')
+}
+
+if (orderTotal([]) !== 0) {
+    throw new Error('Simple sum failed')
+}
